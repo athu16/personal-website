@@ -1,0 +1,5 @@
+markdown
+markdown-katex
+pygments
+pymdown-extensions
+python-frontmatter
