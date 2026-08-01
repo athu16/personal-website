@@ -1,0 +1,497 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Lora:ital,wght@0,400..700;1,400..700&family=Space+Grotesk:wght@500;700&display=swap');
+
+:root {
+  --bg: #F5F0E8;
+  --surface: #FFFFFF;
+  --surface-alt: #FFF3C4;
+  --text: #111111;
+  --muted: #4B4B4B;
+  --accent: #FFD400;     /* Signature Yellow */
+  --accent-2: #00A878;   /* Clean Green */
+  --accent-3: #FF4433;   /* Accent Red */
+  --border: #111111;
+  --radius: 0px;         /* Sharp neo-brutalist corners */
+  --shadow-sm: 4px 4px 0 #111111;
+  --shadow: 6px 6px 0 #111111;
+  --shadow-lg: 10px 10px 0 #111111;
+
+  --font-head: 'Space Grotesk', sans-serif;
+  --font-body: 'Space Grotesk', sans-serif; /* Matched to homepage */
+  --font-code: 'JetBrains Mono', monospace;
+  --card-border-width: 3px;
+}
+
+/* --- Global Reset & Page Setup --- */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  min-height: 100vh;
+}
+
+h1, h2, h3, h4, h5, h6, .brand {
+  font-family: var(--font-head);
+  color: var(--text);
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+a {
+  color: var(--text);
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+  transition: background-color 0.1s ease;
+}
+
+a:hover {
+  background-color: var(--accent);
+  color: #000000;
+}
+
+::selection {
+  background: var(--accent);
+  color: #111111;
+}
+
+/* --- Layout Elements --- */
+header.site {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 4vw;
+  background: var(--surface);
+  border-bottom: var(--card-border-width) solid var(--border);
+  margin-bottom: 60px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.brand {
+  font-size: 20px;
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand .glyph {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent);
+  border: 2px solid var(--border);
+}
+
+nav.site-nav {
+  display: flex;
+  gap: 24px;
+}
+
+nav.site-nav a {
+  text-decoration: none;
+  color: var(--muted);
+  font-size: 14px;
+  font-family: var(--font-code);
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+nav.site-nav a:hover,
+nav.site-nav a.current {
+  color: var(--text);
+  border-bottom: 2px solid var(--border);
+}
+
+main.container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 24px 80px;
+}
+
+/* --- Prose & Typography --- */
+.prose h1 {
+  font-size: clamp(32px, 5vw, 48px);
+  margin: 1.4em 0 0.6em;
+  letter-spacing: -0.02em;
+}
+
+.prose h2 {
+  font-size: clamp(24px, 4vw, 32px);
+  margin: 1.5em 0 0.6em;
+  border-bottom: 2px solid var(--border);
+  padding-bottom: 6px;
+}
+
+.prose h3 {
+  font-size: clamp(20px, 3vw, 24px);
+  margin: 1.5em 0 0.6em;
+}
+
+.prose p {
+  font-size: 18px;
+  margin-bottom: 1.5em;
+  color: rgba(17, 17, 17, 0.9);
+}
+
+.prose ul, .prose ol {
+  font-size: 18px;
+  margin-bottom: 1.5em;
+  padding-left: 1.8em;
+}
+
+.prose li {
+  margin-bottom: 0.6em;
+}
+
+/* Inline Code */
+.prose code {
+  font-family: var(--font-code);
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text);
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
+  padding: 2px 6px;
+  vertical-align: middle;
+}
+
+/* --- Code Blocks Fix (Dossier Design) --- */
+.prose .codehilite,
+.prose pre:not(.codehilite pre) {
+  background: var(--surface) !important;
+  border: var(--card-border-width) solid var(--border) !important;
+  box-shadow: var(--shadow) !important;
+  padding: 18px !important;
+  overflow-x: auto;
+  margin: 2em 0;
+  position: relative;
+}
+
+/* Subtle format tag in top right of codeblocks */
+.prose .codehilite::before {
+  content: 'CODE // RAW';
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: var(--border);
+  color: var(--bg);
+  font-family: var(--font-code);
+  font-size: 9px;
+  font-weight: 700;
+  padding: 2px 8px;
+}
+
+/* Reset inner pre inside codehilite */
+.prose .codehilite pre {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.prose pre code, .codehilite code {
+  border: none !important;
+  padding: 0 !important;
+  background: transparent !important;
+  color: var(--text);
+  font-family: var(--font-code);
+  font-size: 14.5px;
+  line-height: 1.6;
+}
+
+/* --- Clean Pygments Syntax Highlighting (Custom Strict Rules) --- */
+.codehilite * {
+  color: #111111 !important; /* Catch-all default: Black */
+}
+
+/* 1. Punctuation - Gray */
+.codehilite .p, .codehilite .o {
+  color: #888888 !important;
+}
+
+/* 2. Strings - Green */
+.codehilite .s, .codehilite .s1, .codehilite .s2,
+.codehilite .se, .codehilite .sh, .codehilite .si,
+.codehilite .sx, .codehilite .sr, .codehilite .ss {
+  color: var(--accent-2) !important;
+}
+
+/* 3. Comments - Yellow (Saturated gold for clean light-mode readability) */
+.codehilite .c, .codehilite .ch, .codehilite .cm,
+.codehilite .c1, .codehilite .cs {
+  color: #B58A00 !important;
+  font-style: italic !important;
+}
+
+/* 4. Function definitions - Blue */
+.codehilite .nf, .codehilite .fm {
+  color: #0056b3 !important;
+  font-weight: 700 !important;
+}
+
+/* 5. Constants & Numbers - Purple */
+.codehilite .kc, .codehilite .no, .codehilite .m,
+.codehilite .mf, .codehilite .mh, .codehilite .mi,
+.codehilite .mo {
+  color: #7B1FA2 !important;
+}
+
+
+/* --- Admonitions / Callout Blocks (Redesigned & High-Saturation) --- */
+/* Base Callout Styling (Margin, Background, Border, Shadow) */
+.prose .admonition,
+.prose details.admonition,
+.prose details.note,
+.prose details.warning,
+.prose details.caution,
+.prose details.danger,
+.prose details.error,
+.prose details.bug,
+.prose details.tip,
+.prose details.hint,
+.prose details.success,
+.prose details.info,
+.prose details.important,
+.prose details.todo {
+  background: var(--surface);
+  border: var(--card-border-width) solid var(--border);
+  box-shadow: var(--shadow-sm);
+  margin: 2em 0;
+}
+
+/* Remove bottom margin from paragraphs inside admonitions */
+.prose .admonition p,
+.prose details p {
+    margin-bottom: 0px;
+}
+
+/* Padding applied only to non-collapsible static admonitions */
+.prose .admonition:not(details) {
+  padding: 20px;
+}
+
+/* Collapsible Admonitions (Padding is moved inside to prevent clipping/cutoff) */
+.prose details.admonition,
+.prose details.note,
+.prose details.warning,
+.prose details.caution,
+.prose details.danger,
+.prose details.error,
+.prose details.bug,
+.prose details.tip,
+.prose details.hint,
+.prose details.success,
+.prose details.info,
+.prose details.important,
+.prose details.todo {
+  padding: 0;
+}
+
+/* Summary Headers Spacing */
+.prose .admonition-title,
+.prose details.admonition > summary,
+.prose details.note > summary,
+.prose details.warning > summary,
+.prose details.caution > summary,
+.prose details.danger > summary,
+.prose details.error > summary,
+.prose details.bug > summary,
+.prose details.tip > summary,
+.prose details.hint > summary,
+.prose details.success > summary,
+.prose details.info > summary,
+.prose details.important > summary,
+.prose details.todo > summary {
+  font-family: var(--font-code);
+  font-weight: 700;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text);
+  display: inline-flex;
+  padding: 4px 10px;
+  border: 2px solid var(--border);
+  cursor: pointer;
+  list-style: none;
+  margin: 16px 20px; /* Non-clipping spacing when closed */
+}
+
+.prose details > summary {
+    margin-bottom: 0px !important;
+}
+
+.prose details[open] > summary {
+    margin-bottom: 20px !important;
+}
+
+/* Static Admonition Titles Spacing adjustments */
+.prose .admonition:not(details) .admonition-title {
+  margin: 0 0 14px 0;
+}
+
+/* Collapsible Callouts Content Spacing (using ::details-content for encapsulation) */
+.prose details::details-content {
+  padding: 0 20px 20px 20px;
+}
+
+/* Fallback content spacing for older browsers that don't support ::details-content */
+@supports not (selector(::details-content)) {
+  .prose details > *:not(summary) {
+    margin: 0 20px 20px 20px;
+  }
+}
+
+/* Clean up HTML details marker spacing */
+.prose details > summary::-webkit-details-marker { display: none; }
+.prose details > summary::marker { content: ""; }
+
+/* --- Saturated Callout Colors (Warning & Danger distinctly separated) --- */
+
+/* Note (Saturated Yellow) */
+.prose .admonition.note, .prose details.note {
+  background: #FFF89C;
+}
+.prose .admonition.note .admonition-title, .prose details.note > summary {
+  background: var(--accent);
+}
+
+/* Warning & Caution (Saturated Orange) */
+.prose .admonition.warning, .prose .admonition.caution,
+.prose details.warning, .prose details.caution {
+  background: #FFC97A;
+}
+.prose .admonition.warning .admonition-title, .prose .admonition.caution .admonition-title,
+.prose details.warning > summary, .prose details.caution > summary {
+  background: #FF9400;
+  color: #000000;
+}
+
+/* Danger, Error & Bug (Saturated Vibrant Red) */
+.prose .admonition.danger, .prose .admonition.error, .prose .admonition.bug,
+.prose details.danger, .prose details.error, .prose details.bug {
+  background: #FFA1A1;
+}
+.prose .admonition.danger .admonition-title, .prose .admonition.error .admonition-title, .prose .admonition.bug .admonition-title,
+.prose details.danger > summary, .prose details.error > summary, .prose details.bug > summary {
+  background: var(--accent-3);
+  color: #FFFFFF;
+}
+
+/* Tip, Hint & Success (Saturated Green) */
+.prose .admonition.tip, .prose .admonition.hint, .prose .admonition.success,
+.prose details.tip, .prose details.hint, .prose details.success {
+  background: #A3FCD0;
+}
+.prose .admonition.tip .admonition-title, .prose .admonition.hint .admonition-title, .prose .admonition.success .admonition-title,
+.prose details.tip > summary, .prose details.hint > summary, .prose details.success > summary {
+  background: var(--accent-2);
+  color: #FFFFFF;
+}
+
+/* Info, Important & Todo (Saturated Blue) */
+.prose .admonition.info, .prose .admonition.important, .prose .admonition.todo,
+.prose details.info, .prose details.important, .prose details.todo {
+  background: #BFE3FF;
+}
+.prose .admonition.info .admonition-title, .prose .admonition.important .admonition-title, .prose .admonition.todo .admonition-title,
+.prose details.info > summary, .prose details.important > summary, .prose details.todo > summary {
+  background: #4DA3FF;
+  color: #000000;
+}
+
+
+/* --- Blockquotes --- */
+.prose blockquote {
+  background: var(--surface);
+  border: var(--card-border-width) solid var(--border);
+  border-left: 10px solid var(--accent); /* Left accent bar */
+  box-shadow: var(--shadow);
+  padding: 24px 28px;
+  margin: 2em 0;
+  font-style: italic;
+}
+.prose blockquote p {
+  font-size: 20px;
+  margin-bottom: 0;
+  color: var(--text);
+}
+
+/* --- Tables --- */
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 2.5em 0;
+  background: var(--surface);
+  border: var(--card-border-width) solid var(--border);
+  box-shadow: var(--shadow);
+  font-size: 16px;
+}
+
+.prose th, .prose td {
+  padding: 12px 16px;
+  border: 2px solid var(--border);
+  text-align: left;
+}
+
+.prose th {
+  background: var(--accent);
+  color: var(--text);
+  font-family: var(--font-head);
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 14px;
+  letter-spacing: 0.05em;
+}
+
+.prose tr:nth-child(even) {
+  background: var(--bg);
+}
+
+/* --- Footer --- */
+footer.site {
+  text-align: center;
+  padding: 40px 20px;
+  font-size: 12px;
+  font-family: var(--font-code);
+  font-weight: 700;
+  color: var(--muted);
+  border-top: var(--card-border-width) solid var(--border);
+  background: var(--surface);
+  margin-top: 80px;
+}
+
+/* --- Math Equations (LaTeX -> SVG/HTML) --- */
+
+/* Inline Math */
+.prose .katex {
+  font-size: 1.1em;
+  color: var(--text);
+}
+
+/* Block Math ($$ ... $$) */
+.prose .katex-display {
+  background: var(--surface);
+  border: var(--card-border-width) solid var(--border);
+  box-shadow: var(--shadow);
+  padding: 24px;
+  overflow-x: auto;
+  margin: 2em 0;
+  text-align: center;
+}
+
+/* Ensure SVG glyphs in formulas inherit color correctly */
+.prose .katex svg {
+  fill: currentColor;
+  stroke: currentColor;
+}
