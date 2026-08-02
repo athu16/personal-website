@@ -6,13 +6,21 @@ Usage:
 """
 
 import argparse
-from datetime import datetime
+from datetime import datetime, timezone
 import re
 import shutil
 import sys
 from pathlib import Path
+import xml.etree.ElementTree as ET
+from xml.dom import minidom
 import markdown
 import frontmatter
+
+# --- SITE CONFIGURATION ---
+BASE_URL = "https://www.atharvaidya.com"
+FEED_TITLE = "Atharva's Website"
+FEED_DESCRIPTION = "I write about things I find interesting or stuff I want to remember."
+FEED_FILENAME = "feed.xml"
 
 MARKDOWN_EXTENSIONS = [
     "extra", "codehilite", "toc", "sane_lists", "admonition", "smarty", "markdown_katex", "pymdownx.details",
@@ -55,6 +63,23 @@ def format_date(date_val) -> str:
         except ValueError:
             return str(date_val)
     return ""
+
+def format_rfc822_date(date_val) -> str:
+    """Helper to convert dates into RFC 822 format required for RSS feeds."""
+    if isinstance(date_val, (datetime, str)):
+        try:
+            if isinstance(date_val, str):
+                dt = datetime.fromisoformat(date_val)
+            else:
+                dt = date_val
+
+            # Ensure timezone awareness for GMT/UTC
+            if dt.tzinfo is None:
+                dt = dt.replace(tzinfo=timezone.utc)
+            return dt.strftime("%a, %d %b %Y %H:%M:%S %z")
+        except ValueError:
+            pass
+    return datetime.now(timezone.utc).strftime("%a, %d %b %Y %H:%M:%S %z")
 
 def process_file(input_path: Path, output_dir: Path, content_dir: Path, template_dir: Path) -> dict:
     post = frontmatter.load(input_path)
@@ -109,7 +134,7 @@ def process_file(input_path: Path, output_dir: Path, content_dir: Path, template
     out_path.write_text(final_html, encoding="utf-8")
     print(f"Built post: {out_path}")
 
-    # Return article info for the homepage index builder
+    # Return article info for the homepage index & RSS builder
     return {
         "title": metadata["title"],
         "category": metadata["category"],
@@ -125,7 +150,7 @@ def generate_index_card(article: dict) -> str:
     """Generates an HTML card for an article on the homepage grid."""
     category = article["category"]
 
-    # Pick badge colors matching your mockup's design system
+    # Pick badge colors matching design system
     cat_lower = category.lower()
     if "programming" in cat_lower or "code" in cat_lower:
         cat_style = 'style="background: var(--text); color: var(--surface);"'
@@ -187,8 +212,7 @@ def build_homepage(articles: list, template_dir: Path, output_dir: Path):
 
     index_html = index_template_path.read_text(encoding="utf-8")
 
-    # Replace the mockup placeholder elements
-    # 1. Replace directory list
+    # Replace mockup placeholder elements
     index_html = re.sub(
         r'<div class="directory-list">.*?</div>',
         f'<div class="directory-list">\n          {sidebar_html.strip()}\n        </div>',
@@ -196,7 +220,6 @@ def build_homepage(articles: list, template_dir: Path, output_dir: Path):
         flags=re.DOTALL
     )
 
-    # 2. Replace articles grid
     index_html = re.sub(
         r'<div class="articles-grid">.*?</div>',
         f'<div class="articles-grid">\n{grid_html}\n      </div>',
@@ -208,6 +231,52 @@ def build_homepage(articles: list, template_dir: Path, output_dir: Path):
     out_index = output_dir / "index.html"
     out_index.write_text(index_html, encoding="utf-8")
     print(f"Built Homepage: {out_index}")
+
+def generate_rss_feed(articles: list, output_dir: Path):
+    """Generates a RSS 2.0 XML feed file in the output directory."""
+    sorted_articles = sorted(
+        articles,
+        key=lambda x: str(x.get("date", "")),
+        reverse=True
+    )
+
+    # Root RSS element
+    rss = ET.Element("rss", version="2.0", attrib={"xmlns:atom": "http://www.w3.org/2005/Atom"})
+    channel = ET.SubElement(rss, "channel")
+
+    # Metadata
+    ET.SubElement(channel, "title").text = FEED_TITLE
+    ET.SubElement(channel, "link").text = BASE_URL
+    ET.SubElement(channel, "description").text = FEED_DESCRIPTION
+    ET.SubElement(channel, "language").text = "en"
+    ET.SubElement(channel, "lastBuildDate").text = format_rfc822_date(datetime.now(timezone.utc))
+
+    # Self-referencing link tag for feed readers
+    atom_link = ET.SubElement(channel, "{http://www.w3.org/2005/Atom}link")
+    atom_link.set("href", f"{BASE_URL}/{FEED_FILENAME}")
+    atom_link.set("rel", "self")
+    atom_link.set("type", "application/rss+xml")
+
+    # Add items
+    for article in sorted_articles:
+        item = ET.SubElement(channel, "item")
+
+        full_url = f"{BASE_URL.rstrip('/')}{article['url']}"
+
+        ET.SubElement(item, "title").text = article["title"]
+        ET.SubElement(item, "link").text = full_url
+        ET.SubElement(item, "guid").text = full_url
+        ET.SubElement(item, "pubDate").text = format_rfc822_date(article["date"])
+        ET.SubElement(item, "description").text = article["summary"]
+
+    # Pretty-print XML structure
+    raw_xml_bytes = ET.tostring(rss, encoding="utf-8")
+    parsed_dom = minidom.parseString(raw_xml_bytes)
+    pretty_xml = parsed_dom.toprettyxml(indent="  ", encoding="utf-8").decode("utf-8")
+
+    out_feed = output_dir / FEED_FILENAME
+    out_feed.write_text(pretty_xml, encoding="utf-8")
+    print(f"Built RSS Feed: {out_feed}")
 
 def copy_static_assets(template_dir: Path, output_dir: Path):
     """Copies static files (like style.css) from templates/ to output/."""
@@ -245,6 +314,9 @@ def main() -> int:
 
     # Build dynamic index.html page
     build_homepage(articles, args.templates, args.output)
+
+    # Build RSS feed XML
+    generate_rss_feed(articles, args.output)
 
     print(f"\nSite built successfully in '{args.output}'!")
     return 0

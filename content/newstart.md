@@ -1,8 +1,8 @@
 ---
-title: Hello (again)!
+title: Hello again!
 date: 2026-08-01
 category: Blogs
-summary: An update on my blog and this website
+summary: A long-due update on this website and my blog.
 tags:
   - personal
   - updates
