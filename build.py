@@ -72,7 +72,7 @@ def format_rfc822_date(date_val) -> str:
                 dt = datetime.fromisoformat(date_val)
             else:
                 dt = date_val
-
+            
             # Ensure timezone awareness for GMT/UTC
             if dt.tzinfo is None:
                 dt = dt.replace(tzinfo=timezone.utc)
@@ -260,9 +260,9 @@ def generate_rss_feed(articles: list, output_dir: Path):
     # Add items
     for article in sorted_articles:
         item = ET.SubElement(channel, "item")
-
+        
         full_url = f"{BASE_URL.rstrip('/')}{article['url']}"
-
+        
         ET.SubElement(item, "title").text = article["title"]
         ET.SubElement(item, "link").text = full_url
         ET.SubElement(item, "guid").text = full_url
@@ -285,6 +285,14 @@ def copy_static_assets(template_dir: Path, output_dir: Path):
         shutil.copy(css_file, output_dir / "style.css")
         print("Copied: style.css -> public/style.css")
 
+def copy_resources_folder(content_dir: Path, output_dir: Path):
+    """Copies the 'resources' folder from content directory directly to output directory if present."""
+    resources_src = content_dir / "resources"
+    if resources_src.exists() and resources_src.is_dir():
+        resources_dest = output_dir / "resources"
+        shutil.copytree(resources_src, resources_dest, dirs_exist_ok=True)
+        print(f"Copied resources directory: {resources_src} -> {resources_dest}")
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Build the static site.")
     parser.add_argument("--content", type=Path, default=Path("content"), help="Content directory")
@@ -301,13 +309,16 @@ def main() -> int:
     # Copy CSS and assets
     copy_static_assets(args.templates, args.output)
 
+    # Copy content/resources directory if it exists
+    copy_resources_folder(args.content, args.output)
+
     # Process all Markdown and HTML files
     content_files = list(args.content.rglob("*.md")) + list(args.content.rglob("*.html"))
     articles = []
 
     for file_path in content_files:
-        # Avoid processing index.html inside content if it exists
-        if file_path.name == "index.html":
+        # Avoid processing index.html inside content or files inside resources/
+        if file_path.name == "index.html" or "resources" in file_path.parts:
             continue
         article_info = process_file(file_path, args.output, args.content, args.templates)
         articles.append(article_info)
