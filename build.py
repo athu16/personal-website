@@ -27,18 +27,14 @@ MARKDOWN_EXTENSIONS = [
 ]
 MARKDOWN_EXTENSION_CONFIGS = {
     "codehilite": {"guess_lang": False},
-    "toc": {"permalink": False},
-    "katex": {
-        "no_subtitles": True,
-        "insert_fonts_css": True, # Ensures math symbols render perfectly
-    },
 }
 
+# Convert markdown into HTML
 def convert_markdown(md_text: str) -> str:
     md = markdown.Markdown(
         extensions=MARKDOWN_EXTENSIONS,
         extension_configs=MARKDOWN_EXTENSION_CONFIGS,
-        output_format="html5",
+        output_format="html5",  # TODO: Check if this is supported (or only xhtml & html)
     )
     return md.convert(md_text)
 
@@ -51,35 +47,13 @@ def render_template(text: str, context: dict) -> str:
 
     return re.sub(r'\{\{\s*([a-zA-Z0-9_]+)\s*\}\}', replacer, text)
 
-def format_date(date_val) -> str:
-    """Helper to convert dates into standard 'Nov 22, 2025' string format."""
-    if isinstance(date_val, (datetime, str)):
-        try:
-            if isinstance(date_val, str):
-                dt = datetime.fromisoformat(date_val)
-            else:
-                dt = date_val
-            return dt.strftime("%b %d, %Y")
-        except ValueError:
-            return str(date_val)
-    return ""
+def generate_tag_pills(tags):
+    return "".join([f'<span class="tag-pill">{t.lstrip("#")}</span>' for t in tags])
 
 def format_rfc822_date(date_val) -> str:
     """Helper to convert dates into RFC 822 format required for RSS feeds."""
-    if isinstance(date_val, (datetime, str)):
-        try:
-            if isinstance(date_val, str):
-                dt = datetime.fromisoformat(date_val)
-            else:
-                dt = date_val
-            
-            # Ensure timezone awareness for GMT/UTC
-            if dt.tzinfo is None:
-                dt = dt.replace(tzinfo=timezone.utc)
-            return dt.strftime("%a, %d %b %Y %H:%M:%S %z")
-        except ValueError:
-            pass
-    return datetime.now(timezone.utc).strftime("%a, %d %b %Y %H:%M:%S %z")
+    dt = datetime.fromisoformat(str(date_val))
+    return dt.strftime("%a, %d %b %Y %H:%M:%S %z")
 
 def process_file(input_path: Path, output_dir: Path, content_dir: Path, template_dir: Path) -> dict:
     post = frontmatter.load(input_path)
@@ -89,13 +63,13 @@ def process_file(input_path: Path, output_dir: Path, content_dir: Path, template
     # Defaults
     metadata.setdefault("title", input_path.stem.replace("-", " ").title())
     metadata.setdefault("lang", "en")
-    metadata.setdefault("theme", "brutalist")
-    metadata.setdefault("category", "General")
+    metadata.setdefault("category", "Blogs")
     metadata.setdefault("tags", [])
     metadata.setdefault("date", "")
     metadata.setdefault("summary", "")
+    metadata.setdefault("layout", "base.html")
 
-    layout_name = metadata.get("layout", "base.html")
+    layout_name = metadata.get("layout")
 
     # Relative path calculations for working links
     rel_path = input_path.relative_to(content_dir)
@@ -103,11 +77,11 @@ def process_file(input_path: Path, output_dir: Path, content_dir: Path, template
     web_link = "/" + str(rel_path.with_suffix('.html')).replace("\\", "/")
 
     # Extract tags list or format if string
-    tags = metadata.get("tags", [])
+    tags = metadata.get("tags")
     if isinstance(tags, str):
         tags = [t.strip() for t in tags.split(",")]
 
-    tags_html = "".join([f'<span class="tag-pill">#{t.lstrip("#")}</span>' for t in tags])
+    tags_html = generate_tag_pills(tags)
     metadata["tags_html"] = tags_html
 
     # Substitute content variables
@@ -139,7 +113,7 @@ def process_file(input_path: Path, output_dir: Path, content_dir: Path, template
         "title": metadata["title"],
         "category": metadata["category"],
         "date": metadata["date"],
-        "date_str": format_date(metadata["date"]),
+        "date_str": metadata["date"],
         "summary": metadata["summary"],
         "tags": tags,
         "url": web_link,
@@ -151,24 +125,23 @@ def generate_index_card(article: dict) -> str:
     category = article["category"]
 
     # Pick badge colors matching design system
-    cat_lower = category.lower()
-    if "programming" in cat_lower or "code" in cat_lower:
-        cat_style = 'style="background: var(--text); color: var(--surface);"'
-    elif "literature" in cat_lower or "analysis" in cat_lower:
+    if category == "Blogs":
+        cat_style = 'style="background: var(--accent); color: var(--text);"'
+    elif category == "Product Reviews":
         cat_style = 'style="background: var(--accent-2); color: #fff;"'
-    elif "hardware" in cat_lower or "repair" in cat_lower:
+    elif category == 'Technical Write-ups':
         cat_style = 'style="background: var(--accent-3); color: #fff;"'
     else:
-        cat_style = 'style="background: var(--accent); color: var(--text);"'
+        cat_style = 'style="background: var(--text); color: var(--surface);"'
 
     # Format tag pills
-    tags_html = "".join([f'<span>#{t.lstrip("#")}</span>' for t in article["tags"]])
+    tags_html = generate_tag_pills(article["tags"])
 
     return f"""
         <a href="{article['url']}" class="article-card">
           <div class="card-top">
             <span class="category" {cat_style}>{category}</span>
-            <span>{article['date_str']}</span>
+            <span>{article['date']}</span>
           </div>
           <div class="card-body">
             <h3>{article['title']}</h3>
@@ -260,9 +233,9 @@ def generate_rss_feed(articles: list, output_dir: Path):
     # Add items
     for article in sorted_articles:
         item = ET.SubElement(channel, "item")
-        
+
         full_url = f"{BASE_URL.rstrip('/')}{article['url']}"
-        
+
         ET.SubElement(item, "title").text = article["title"]
         ET.SubElement(item, "link").text = full_url
         ET.SubElement(item, "guid").text = full_url
@@ -304,6 +277,7 @@ def main() -> int:
         print(f"Error: Content directory '{args.content}' not found.", file=sys.stderr)
         return 1
 
+    # Create output directory
     args.output.mkdir(parents=True, exist_ok=True)
 
     # Copy CSS and assets
