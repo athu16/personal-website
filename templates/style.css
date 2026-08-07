@@ -39,8 +39,8 @@ h1, h2, h3, h4, h5, h6, .brand {
   line-height: 1.25;
 }
 
-a {
-  color: var(--text);
+.prose a {
+  color: var(--accent-2);
   font-weight: 700;
   text-decoration: underline;
   text-decoration-thickness: 2px;
@@ -48,7 +48,9 @@ a {
   transition: background-color 0.1s ease;
 }
 
-a:hover {
+/* Exclude homepage cards and navbar links from the background change effect */
+/*a:hover:not(.homepage-workspace a:hover, .navbar a:hover) {*/
+.prose a:hover {
   background-color: var(--accent);
   color: #000000;
 }
@@ -494,4 +496,15 @@ footer.site {
 .prose .katex svg {
   fill: currentColor;
   stroke: currentColor;
+}
+
+/* Tag pills */
+
+.prose .tag-pill,
+.homepage-workspace .tag-pill {
+    color: black;
+    border: 1px solid var(--border);
+    padding: 2px 8px;
+    background: var(--surface);
+    border-radius: 4px;
 }
