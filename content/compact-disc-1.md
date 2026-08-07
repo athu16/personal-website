@@ -3,18 +3,15 @@ title: How do CDs work? - Part 1
 date: 2026-08-02
 category: Technical Write-ups
 summary: The first part in a series of articles explaining how optical media works. This one explains PCM (turning audio into 1s and 0s).
-tags:
-  - music
-  - how things work
-  - compact disc
+tags: music, how things work, compact disc
 ---
 
-If you grew up around CDs, you might have wondered at some point (like me), "How on earth does a shiny plastic disc store music?" If you were anything like me, you probably googled for answers and came to a conclusion similar to this: 
+If you grew up around CDs, you might have wondered at some point "How on earth does a shiny plastic disc store music?" If you were anything like me, you probably googled for answers and came to a conclusion similar to this: 
 
 !!! note ""
     CDs store data using a single long spiral track of microscopic bumps and flat spaces called pits and lands, which represent binary code (1s and 0s) read by a laser beam.
 
-This answer satisfied me as a kid (even though it's technically wrong in a few places), but as I grew older so did the questions.
+This answer satisfied me as a kid (even though it's technically incomplete), but as I grew older so did the questions.
 
 - "How is audio, i.e. pressure waves, converted into a series of 1s and 0s?"
 - "How exactly does a laser beam 'read' a pit or a land?"
@@ -41,7 +38,7 @@ Consider the scenario below, showing two sine waves oscillating at 10 Hz and 90 
 
 We're going to sample both these waves 100 times per second. Since the vertical grid lines are 0.05 seconds apart, we'll have 5 samples after each grid line. Our sampling frequency of 100 Hz is higher than both the waves. But if the Nyquist-Shannon theorem holds true, the maximum frequency we can safely sample is 50 Hz. Let's try sampling. I've marked the sample points for both waves with red dots.
 
-![The same graph from before, but with red sample points every 1 ms](resources/nyquist-2.png)
+![The same graph from before, but with red sample points every 10 ms](resources/nyquist-2.png)
 
 You might have already noticed that we have a problem. Let me make it clearer by removing the original wave, so we only see the sample points.
 
@@ -62,7 +59,7 @@ So we understand the effect sample rate has on recorded audio. In our example, w
 Audio CDs follow a specification called the Red Book audio standard, which specifies the resolution as 16 bits (-32768 to 32767) and the sample rate as 44.1 kHz. There's an interesting historical reason as to why the sample rate is this weirdly specific number, which I have explained in the collapsible block below.
 
 ??? info "Why is CD audio sampled at 44.1 kHz?"
-    Pulse Code Modulation was developed long before CDs and was used in professional digital recorders since the 1970s. These recorders used video cassette tapes as they were the only medium which could hold a substatial amount of data at the time. At the time, analog television had two major standards - NTSC (North America & Japan) and PAL (Europe, Australia, India). These standards dictated the refresh rate (60 Hz for NTSC and 50 Hz for PAL) and the number of scan lines drawn each frame (525 vs 625). But the video signal was interlaced (each frame was drawn using only even or odd scan lines, i.e. half of the total), so there were 245 (NTSC) or 294 (PAL) scan lines for each interlaced field. The reason I'm throwing these numbers at you is that engineers were looking for a way to have digital audio recordings to sound exactly the same on NTSC and PAL systems. This required storing an integral (i.e. an integer) number of audio samples per scan line, so they could synchronise audio playback to a reference and reuse existing circuitry to simplify the process. By storing a modest three samples per scan line, they could calculate the following sample rates:
+    Pulse Code Modulation was developed long before CDs and was used in professional digital recorders since the 1970s. These recorders used video cassette tapes as they were the only medium which could hold a substatial amount of data at the time. At the time, analog television had two major standards - NTSC (North America & Japan) and PAL (Europe, Australia, India). These standards dictated the refresh rate (60 Hz for NTSC and 50 Hz for PAL) and the number of scan lines drawn each frame (525 vs 625). But the video signal was interlaced (each frame was drawn using only even or odd scan lines, i.e. half of the total), so there were 245 (NTSC) or 294 (PAL) **active** scan lines for each interlaced field excluding the blanking intervals. The reason I'm throwing these numbers at you is that engineers were looking for a way to have digital audio recordings to sound exactly the same on NTSC and PAL systems. This required storing an integral (i.e. an integer) number of audio samples per scan line, so they could synchronise audio playback to a reference and reuse existing circuitry to simplify the process. By storing a modest three samples per scan line, they could calculate the following sample rates:
 
     ```math
     \text{NTSC: } 245_{\text{lines}} \times 60_{\text{fields/sec}} \times 3_{\text{samples/line}} = 44,100 \text{ Hz}
@@ -72,10 +69,10 @@ Audio CDs follow a specification called the Red Book audio standard, which speci
     \text{PAL: } 294_{\text{lines}} \times 50_{\text{fields/sec}} \times 3_{\text{samples/line}} = 44,100 \text{ Hz}
     ```
     
-    The sample rate was thus locked to the video sync frequencies and the tape would always move at the correct speed.  But there was another advantage to having the sample rate slightly higher than required. Remember when I said all frequencies above the Nyquist limit need to be cut off to prevent aliasing? The hardware of the 70s & 80s couldn't build a perfect "brick-wall" filter that instantly dropped from 100% volume at 20 kHz to 0% volume at 20.001 kHz. Doing so caused severe phase distortion that ruined the sound quality. Having the sample rate set to 44.1 kHz pushed the Nyquist limit up to 22.05 kHz, giving the analog filters a safe ramp to fade out the ultrasonic frequencies without muddying the music.
+    The sample rate was thus locked to the video sync frequencies and the tape would always move at the correct speed.  But there was another advantage to having the sample rate slightly higher than required. Remember when I said all frequencies above the Nyquist limit need to be cut off to prevent aliasing? A perfect "brick-wall" filter that instantly drops from 100% volume at 20 kHz to 0% volume at 20.001 kHz isn't practically feasible, and can cause severe phase distortion as you get near 20 kHz. Having the sample rate set to 44.1 kHz pushes the Nyquist limit up to 22.05 kHz, giving the analog filters a safe ramp to fade out the ultrasonic frequencies without muddying the music.
 
 The final step now is to encode (convert) our numeric list of samples into binary numbers. For CDs, each value is stored as a 16-bit binary 'word'. Negative values are stored using two's complement. These four steps (low-pass filtering, sampling, quantization, encoding) collectively form a technique called Pulse Code Modulation (PCM) - the method used to convert analog audio into a binary bit stream that can be stored on any digital medium, including a CD.
 
-In the next part, we'll explore how these 1s and 0s can be translated to a form that we can store and read back from a CD. Fair warning: our data stream is going to be transformed several more times.
+In the [next part](compact-disc-2.html), we'll explore how a CD player actually reads data from what looks like a plain shiny surface.
 
 <!-- Click here to read the next part, where we explore... -->

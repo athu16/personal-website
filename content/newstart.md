@@ -3,9 +3,7 @@ title: Hello again!
 date: 2026-08-01
 category: Blogs
 summary: A long-due update on this website and my blog.
-tags:
-  - personal
-  - updates
+tags: personal, site update
 ---
 
 Ten months ago, I decided to put the domain I'd purchased almost a year earlier to good use by creating a personal blog / website where I could share my thoughts. After fiddling around with static site generators, node modules and countless configuration files with weird syntax, I ultimately found solace in Material for MkDocs. It was just what I was looking for; a single Python program that took a bunch of Markdown files I wrote and converted it into a nice-looking fully functional website, with cool features like highlighting specific lines in code blocks, annotations that provided little '+' buttons for users to click on, support for rendering Latex equations, and a *no-setup-required* search system.
