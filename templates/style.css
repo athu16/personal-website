@@ -9,6 +9,10 @@
   --accent: #FFD400;     /* Signature Yellow */
   --accent-2: #00A878;   /* Clean Green */
   --accent-3: #FF4433;   /* Accent Red */
+  --cat-blogs: #c29ed9;
+  --cat-reviews: #61bb9d;
+  --cat-techposts: #e9958e;
+  --cat-mathematics: #4eb6e2;
   --border: #111111;
   --radius: 0px;         /* Sharp neo-brutalist corners */
   --shadow-sm: 4px 4px 0 #111111;

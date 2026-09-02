@@ -1,7 +1,7 @@
 ---
 title: How do CDs work? - Part 2
 date: 2026-08-07
-category: Technical Write-ups
+category: Technical Posts
 summary: The second part in the series on optical media. This time we explore how a CD player reads binary data off the shiny plastic disc.
 tags: music, how things work, compact disc
 ---

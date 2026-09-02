@@ -1,7 +1,7 @@
 ---
 title: How do CDs work? - Part 1
 date: 2026-08-02
-category: Technical Write-ups
+category: Technical Posts
 summary: The first part in a series of articles explaining how optical media works. This one explains PCM (turning audio into 1s and 0s).
 tags: music, how things work, compact disc
 ---
