@@ -1,0 +1,719 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#F5F0E8">
+  <title>Bluetooth Latency Test</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@500;600;700&display=swap');
+
+    :root {
+      color-scheme: light;
+      --paper: #F5F0E8;
+      --ink: #111111;
+      --muted: #4B4B4B;
+      --line: #d9d3ca;
+      --green: #00A878;
+      --green-deep: #007b57;
+      --coral: #FF4433;
+      --yellow: #FFD400;
+      --yellow-soft: #FFF3C4;
+      --panel: #FFFFFF;
+      --mono: 'JetBrains Mono', monospace;
+      --sans: 'Space Grotesk', sans-serif;
+      --shadow: 6px 6px 0 #111111;
+      --shadow-sm: 4px 4px 0 #111111;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background-color: var(--paper);
+      background-image:
+        linear-gradient(rgba(17, 17, 17, 0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(17, 17, 17, 0.06) 1px, transparent 1px);
+      background-size: 32px 32px;
+      font-family: var(--sans);
+    }
+
+    button, input { font: inherit; }
+    a { color: inherit; text-decoration: none; }
+
+    .shell {
+      width: min(100% - 8vw, 1160px);
+      margin: 0 auto;
+      padding: 42px 0 48px;
+    }
+
+    .navbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 4vw;
+      border-bottom: 3px solid var(--ink);
+      background: var(--panel);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 20px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0;
+    }
+
+    .brand .glyph {
+      display: flex;
+      width: 32px;
+      height: 32px;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid var(--ink);
+      background: var(--yellow);
+      font-size: 16px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 24px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .nav-links a:hover { color: var(--green-deep); }
+
+    .search-box {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 320px;
+      padding: 8px 16px;
+      border: 2px solid var(--ink);
+      background: var(--paper);
+      color: var(--muted);
+      font-size: 13px;
+      box-shadow: inset 2px 2px 0 rgba(0, 0, 0, 0.05);
+      cursor: text;
+    }
+
+    .search-box svg { color: var(--ink); }
+
+    main { padding-top: 0; }
+
+    .intro {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 32px;
+      margin-bottom: 28px;
+    }
+
+    .eyebrow, .section-label {
+      margin: 0;
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 11px 0 0;
+      font-size: 57px;
+      line-height: 1.03;
+      font-weight: 700;
+      letter-spacing: 0;
+    }
+
+    .intro-note {
+      max-width: 250px;
+      margin: 0 0 4px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.65;
+    }
+
+    .workbench {
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(310px, 0.85fr);
+      min-height: 470px;
+      border: 3px solid var(--ink);
+      box-shadow: var(--shadow);
+      background: var(--panel);
+    }
+
+    .stage {
+      display: flex;
+      min-height: 470px;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 26px 30px 24px;
+      border-right: 3px solid var(--ink);
+      background-color: var(--yellow-soft);
+    }
+
+    .stage-head {
+      display: flex;
+      width: 100%;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .live-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 11px;
+      text-transform: uppercase;
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #b7beb8;
+    }
+
+    .is-playing .status-dot {
+      background: var(--green-deep);
+      box-shadow: 0 0 0 4px rgba(117, 188, 39, 0.15);
+    }
+
+    .beat-count {
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 11px;
+    }
+
+    .light-wrap {
+      display: grid;
+      width: min(100%, 330px);
+      aspect-ratio: 1;
+      place-items: center;
+      margin: 16px 0;
+      border: 2px solid var(--ink);
+      border-radius: 50%;
+      background: var(--panel);
+    }
+
+    .light {
+      width: 48%;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background: #e8e4dc;
+      box-shadow: inset 0 0 0 2px rgba(17, 17, 17, 0.08);
+    }
+
+    .light.flash {
+      transform: scale(1.035);
+      background: var(--green);
+      box-shadow: 0 0 24px 8px rgba(0, 168, 120, 0.52), 0 0 80px 26px rgba(0, 168, 120, 0.24);
+    }
+
+    .stage-foot {
+      display: flex;
+      width: 100%;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .tempo-readout {
+      display: flex;
+      align-items: baseline;
+      gap: 7px;
+      font-family: var(--mono);
+    }
+
+    .tempo-readout strong { font-size: 18px; font-weight: 500; }
+    .tempo-readout span { color: var(--muted); font-size: 10px; text-transform: uppercase; }
+
+    .play-button, .calculate-button, .reset-button {
+      display: inline-flex;
+      min-height: 42px;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      border: 2px solid var(--ink);
+      border-radius: 0;
+      cursor: pointer;
+      transition: transform 120ms ease, background 120ms ease;
+    }
+
+    .play-button {
+      min-width: 132px;
+      padding: 0 17px;
+      color: var(--panel);
+      background: var(--ink);
+      box-shadow: var(--shadow-sm);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .play-button:hover, .calculate-button:hover { transform: translateY(-1px); }
+    .play-button:active, .calculate-button:active { transform: translateY(0); }
+
+    .play-icon {
+      width: 0;
+      height: 0;
+      border-top: 5px solid transparent;
+      border-bottom: 5px solid transparent;
+      border-left: 7px solid currentColor;
+    }
+
+    .play-button[aria-pressed="true"] .play-icon {
+      width: 8px;
+      height: 10px;
+      border: 0;
+      border-right: 3px solid currentColor;
+      border-left: 3px solid currentColor;
+    }
+
+    .controls {
+      display: flex;
+      flex-direction: column;
+      padding: 27px 28px 24px;
+    }
+
+    .control-section { padding-bottom: 25px; }
+    .control-section + .control-section {
+      padding-top: 24px;
+      border-top: 2px solid var(--ink);
+    }
+
+    .section-heading {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .section-heading h2 {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: 0;
+    }
+
+    .range-value {
+      color: var(--ink);
+      font-family: var(--mono);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    input[type="range"] {
+      display: block;
+      width: 100%;
+      height: 22px;
+      margin: 0;
+      appearance: none;
+      background: transparent;
+      cursor: pointer;
+    }
+
+    input[type="range"]::-webkit-slider-runnable-track {
+      height: 4px;
+      border-radius: 0;
+      background: linear-gradient(to right, var(--green) var(--fill, 0%), #ddd7ce var(--fill, 0%));
+    }
+
+    input[type="range"]::-moz-range-track {
+      height: 4px;
+      border-radius: 0;
+      background: #ddd7ce;
+    }
+
+    input[type="range"]::-moz-range-progress { height: 4px; background: var(--green); }
+
+    input[type="range"]::-webkit-slider-thumb {
+      width: 16px;
+      height: 16px;
+      margin-top: -6px;
+      appearance: none;
+      border: 2px solid var(--ink);
+      border-radius: 0;
+      background: var(--yellow);
+      box-shadow: 2px 2px 0 var(--ink);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 12px;
+      height: 12px;
+      border: 2px solid var(--ink);
+      border-radius: 0;
+      background: var(--yellow);
+      box-shadow: 2px 2px 0 var(--ink);
+    }
+
+    input[type="range"]:focus-visible { outline: 2px solid var(--green-deep); outline-offset: 5px; }
+
+    .range-ends {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 8px;
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 10px;
+    }
+
+    .tempo-controls { padding-bottom: 23px; }
+    .latency-section .section-heading { margin-bottom: 9px; }
+
+    .help-copy {
+      margin: 0 0 18px;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.6;
+    }
+
+    .result {
+      display: flex;
+      min-height: 100px;
+      align-items: end;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: auto;
+      padding: 16px 0 18px;
+      border-top: 2px solid var(--ink);
+      border-bottom: 2px solid var(--ink);
+    }
+
+    .result-label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 10px;
+      text-transform: uppercase;
+    }
+
+    .result-value {
+      display: flex;
+      align-items: baseline;
+      gap: 7px;
+      font-family: var(--mono);
+    }
+
+    .result-value strong {
+      font-size: 39px;
+      line-height: 1;
+      font-weight: 500;
+    }
+
+    .result-value span { color: var(--muted); font-size: 12px; }
+
+    .result-mark {
+      display: grid;
+      width: 34px;
+      height: 34px;
+      flex: 0 0 auto;
+      place-items: center;
+      border-radius: 50%;
+      color: var(--ink);
+      background: #D8F3E8;
+      font-size: 16px;
+      opacity: 0;
+      transform: scale(0.8);
+      transition: opacity 160ms ease, transform 160ms ease;
+    }
+
+    .has-result .result-mark { opacity: 1; transform: scale(1); }
+
+    .actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding-top: 17px;
+    }
+
+    .calculate-button {
+      min-width: 142px;
+      padding: 0 16px;
+      color: var(--ink);
+      background: var(--yellow);
+      box-shadow: var(--shadow-sm);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .calculate-button:hover { background: #ffe45c; }
+
+    .reset-button {
+      min-height: 36px;
+      padding: 0 6px;
+      border-color: transparent;
+      color: var(--muted);
+      background: transparent;
+      font-size: 11px;
+    }
+
+    .reset-button:hover { color: var(--ink); }
+
+    .footer-note {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      margin-top: 14px;
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 10px;
+      line-height: 1.6;
+    }
+
+    button:focus-visible { outline: 2px solid var(--green-deep); outline-offset: 3px; }
+
+    @media (max-width: 760px) {
+      .shell { width: min(100% - 32px, 560px); padding-top: 32px; }
+      .intro { align-items: start; flex-direction: column; gap: 13px; margin-bottom: 20px; }
+      .intro-note { max-width: 420px; }
+      .workbench { grid-template-columns: 1fr; }
+      .stage { min-height: 400px; padding: 20px; border-right: 0; border-bottom: 1px solid var(--line); }
+      .light-wrap { width: min(66vw, 290px); }
+      .controls { min-height: 440px; padding: 23px 21px 20px; }
+    }
+
+    @media (max-width: 900px) {
+      .nav-links, .search-box { display: none; }
+    }
+
+    @media (max-width: 420px) {
+      h1 { font-size: 37px; }
+      .stage { min-height: 350px; padding: 17px; }
+      .light-wrap { width: min(62vw, 245px); }
+      .stage-foot { gap: 8px; }
+      .play-button { min-width: 116px; padding: 0 12px; }
+      .footer-note { flex-direction: column; gap: 3px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <header class="navbar">
+    <div class="brand">
+      <span class="glyph">
+        <img src="favicon.svg" width="32" height="32" alt="">
+      </span>
+      Atharva's Website
+    </div>
+    <nav class="nav-links">
+      <a href="/">Articles</a>
+      <a href="#">Knowledge Base</a>
+      <a href="#">About</a>
+    </nav>
+    <div class="search-box">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      Search logs...
+    </div>
+  </header>
+
+  <div class="shell">
+    <main>
+      <section class="intro" aria-labelledby="page-title">
+        <div>
+          <h1 id="page-title">Bluetooth Latency Test</h1>
+        </div>
+        <p class="intro-note">Delay the green flash until it appears in sync with the ding, then calculate your estimated audio latency.</p>
+      </section>
+
+      <section class="workbench" id="test" aria-label="Latency test controls">
+        <div class="stage" id="stage">
+          <div class="stage-head">
+            <div class="live-status" aria-live="polite"><span class="status-dot" aria-hidden="true"></span><span id="statusText">Paused</span></div>
+            <span class="beat-count" id="beatCount">BEAT 000</span>
+          </div>
+          <div class="light-wrap" aria-label="Flashing timing light">
+            <div class="light" id="light"></div>
+          </div>
+          <div class="stage-foot">
+            <div class="tempo-readout"><strong id="tempoReadout">80</strong><span>BPM</span></div>
+            <button class="play-button" id="playButton" type="button" aria-pressed="false">
+              <span class="play-icon" aria-hidden="true"></span><span id="playLabel">Start test</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="controls">
+          <section class="control-section tempo-controls" aria-labelledby="tempo-title">
+            <div class="section-heading">
+              <h2 id="tempo-title">Beat tempo</h2>
+              <output class="range-value" id="tempoValue" for="tempoSlider">80 BPM</output>
+            </div>
+            <input id="tempoSlider" type="range" min="30" max="180" value="80" step="1" aria-label="Beat tempo">
+            <div class="range-ends"><span>30 BPM</span><span>180 BPM</span></div>
+          </section>
+
+          <section class="control-section latency-section" aria-labelledby="latency-title">
+            <div class="section-heading">
+              <h2 id="latency-title">Light delay</h2>
+            </div>
+            <p class="help-copy">Increase the delay until the light appears in sync with the sound in your headphones.</p>
+            <input id="leadSlider" type="range" min="0" max="500" value="0" step="1" aria-label="Light delay in milliseconds">
+            <div class="range-ends"><span>0 ms</span><span>500 ms</span></div>
+          </section>
+
+          <section class="result" id="result" aria-live="polite" aria-atomic="true">
+            <div>
+              <span class="result-label">Estimated audio latency</span>
+              <div class="result-value"><strong id="resultValue">--</strong><span>ms</span></div>
+            </div>
+            <span class="result-mark" aria-hidden="true">&#10003;</span>
+          </section>
+          <div class="actions">
+            <button class="calculate-button" id="calculateButton" type="button">Calculate <span aria-hidden="true">&#8594;</span></button>
+            <button class="reset-button" id="resetButton" type="button">Reset</button>
+          </div>
+        </div>
+      </section>
+
+      <div class="footer-note" id="about"><span>Estimates vary by device and listening volume.</span><span>USE HEADPHONES FOR BEST RESULTS</span></div>
+    </main>
+  </div>
+
+  <script>
+    const stage = document.querySelector('#stage');
+    const light = document.querySelector('#light');
+    const playButton = document.querySelector('#playButton');
+    const playLabel = document.querySelector('#playLabel');
+    const statusText = document.querySelector('#statusText');
+    const beatCount = document.querySelector('#beatCount');
+    const tempoSlider = document.querySelector('#tempoSlider');
+    const tempoReadout = document.querySelector('#tempoReadout');
+    const tempoValue = document.querySelector('#tempoValue');
+    const leadSlider = document.querySelector('#leadSlider');
+    const result = document.querySelector('#result');
+    const resultValue = document.querySelector('#resultValue');
+
+    let audioContext;
+    let schedulerId;
+    let nextBeatTime = 0;
+    let beatNumber = 0;
+    let running = false;
+
+    function updateRangeFill(input) {
+      const percent = ((input.valueAsNumber - input.min) / (input.max - input.min)) * 100;
+      input.style.setProperty('--fill', `${percent}%`);
+    }
+
+    function flashAt(time) {
+      const delay = Math.max(0, (time - audioContext.currentTime) * 1000);
+      window.setTimeout(() => {
+        light.classList.add('flash');
+        window.setTimeout(() => light.classList.remove('flash'), 115);
+      }, delay);
+    }
+
+    function dingAt(time) {
+      const oscillator = audioContext.createOscillator();
+      const gain = audioContext.createGain();
+      oscillator.type = 'sine';
+      oscillator.frequency.setValueAtTime(880, time);
+      oscillator.frequency.exponentialRampToValueAtTime(660, time + 0.09);
+      gain.gain.setValueAtTime(0.0001, time);
+      gain.gain.exponentialRampToValueAtTime(0.28, time + 0.008);
+      gain.gain.exponentialRampToValueAtTime(0.0001, time + 0.18);
+      oscillator.connect(gain);
+      gain.connect(audioContext.destination);
+      oscillator.start(time);
+      oscillator.stop(time + 0.19);
+    }
+
+    function scheduleBeat(audioTime) {
+      const lightDelaySeconds = Number(leadSlider.value) / 1000;
+      flashAt(audioTime + lightDelaySeconds);
+      dingAt(audioTime);
+      beatNumber += 1;
+      beatCount.textContent = `BEAT ${String(beatNumber).padStart(3, '0')}`;
+    }
+
+    function scheduler() {
+      while (nextBeatTime < audioContext.currentTime + 0.1) {
+        scheduleBeat(nextBeatTime);
+        nextBeatTime += 60 / Number(tempoSlider.value);
+      }
+    }
+
+    async function startTest() {
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContextClass) {
+        statusText.textContent = 'Audio unavailable';
+        return;
+      }
+      audioContext ||= new AudioContextClass();
+      await audioContext.resume();
+      running = true;
+      beatNumber = 0;
+      nextBeatTime = audioContext.currentTime + 0.62;
+      schedulerId = window.setInterval(scheduler, 25);
+      stage.classList.add('is-playing');
+      playButton.setAttribute('aria-pressed', 'true');
+      playLabel.textContent = 'Pause test';
+      statusText.textContent = 'Playing';
+    }
+
+    function stopTest() {
+      running = false;
+      window.clearInterval(schedulerId);
+      stage.classList.remove('is-playing');
+      playButton.setAttribute('aria-pressed', 'false');
+      playLabel.textContent = 'Start test';
+      statusText.textContent = 'Paused';
+      light.classList.remove('flash');
+    }
+
+    playButton.addEventListener('click', () => {
+      if (running) stopTest();
+      else startTest();
+    });
+
+    tempoSlider.addEventListener('input', () => {
+      const tempo = Number(tempoSlider.value);
+      tempoReadout.textContent = tempo;
+      tempoValue.textContent = `${tempo} BPM`;
+      updateRangeFill(tempoSlider);
+    });
+
+    leadSlider.addEventListener('input', () => updateRangeFill(leadSlider));
+
+    document.querySelector('#calculateButton').addEventListener('click', () => {
+      resultValue.textContent = leadSlider.value;
+      result.classList.add('has-result');
+    });
+
+    document.querySelector('#resetButton').addEventListener('click', () => {
+      leadSlider.value = 0;
+      resultValue.textContent = '--';
+      result.classList.remove('has-result');
+      updateRangeFill(leadSlider);
+    });
+
+    window.addEventListener('keydown', (event) => {
+      if (event.code === 'Space' && !['INPUT', 'BUTTON'].includes(document.activeElement.tagName)) {
+        event.preventDefault();
+        playButton.click();
+      }
+    });
+
+    updateRangeFill(tempoSlider);
+    updateRangeFill(leadSlider);
+  </script>
+</body>
+</html>
