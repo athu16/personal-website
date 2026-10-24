@@ -326,12 +326,4 @@ def main() -> int:
     return 0
 
 if __name__ == "__main__":
-    # Temporary
-    while True:
-        try:
-            main()
-            time.sleep(2)
-        except KeyboardException:
-            sys.exit()
-
-    # sys.exit(main())
+    sys.exit(main())
