@@ -1,3 +1,11 @@
+---
+title: Bluetooth Latency Test
+date: 2026-10-04
+category: Apps
+summary: An app to measure latency of your Bluetooth device.
+tags: webapps
+---
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -6,150 +14,55 @@
   <meta name="theme-color" content="#F5F0E8">
   <title>Bluetooth Latency Test</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@500;600;700&display=swap');
-
-    :root {
-      color-scheme: light;
-      --paper: #F5F0E8;
-      --ink: #111111;
-      --muted: #4B4B4B;
-      --line: #d9d3ca;
-      --green: #00A878;
-      --green-deep: #007b57;
-      --coral: #FF4433;
-      --yellow: #FFD400;
-      --yellow-soft: #FFF3C4;
-      --panel: #FFFFFF;
-      --mono: 'JetBrains Mono', monospace;
-      --sans: 'Space Grotesk', sans-serif;
-      --shadow: 6px 6px 0 #111111;
-      --shadow-sm: 4px 4px 0 #111111;
+    /* TEMPLATE CONTENT OVERRIDES */
+    main.container {
+        max-width: none;
+        padding: 0 24px 0;
     }
 
-    * { box-sizing: border-box; }
+    .article-header {
+        border: none;
+        padding-bottom: 0px;
+        text-align: center;
+    }
+
+    .article-meta {
+        display: none;
+    }
+
+    .prose h1 {
+        margin: 0.6em 0;
+    }
+    /* END OF TEMPLATE CONTENT OVERRIDES */
+
+    .tool-explanation {
+        margin-top: 2em;
+    }
 
     body {
-      margin: 0;
-      min-height: 100vh;
-      color: var(--ink);
-      background-color: var(--paper);
       background-image:
         linear-gradient(rgba(17, 17, 17, 0.06) 1px, transparent 1px),
         linear-gradient(90deg, rgba(17, 17, 17, 0.06) 1px, transparent 1px);
       background-size: 32px 32px;
-      font-family: var(--sans);
     }
-
-    button, input { font: inherit; }
-    a { color: inherit; text-decoration: none; }
 
     .shell {
       width: min(100% - 8vw, 1160px);
       margin: 0 auto;
-      padding: 42px 0 48px;
-    }
-
-    .navbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 16px 4vw;
-      border-bottom: 3px solid var(--ink);
-      background: var(--panel);
-      position: sticky;
-      top: 0;
-      z-index: 50;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-size: 20px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0;
-    }
-
-    .brand .glyph {
-      display: flex;
-      width: 32px;
-      height: 32px;
-      align-items: center;
-      justify-content: center;
-      border: 2px solid var(--ink);
-      background: var(--yellow);
-      font-size: 16px;
-    }
-
-    .nav-links {
-      display: flex;
-      gap: 24px;
-      font-size: 14px;
-      font-weight: 700;
-    }
-
-    .nav-links a:hover { color: var(--green-deep); }
-
-    .search-box {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      width: 320px;
-      padding: 8px 16px;
-      border: 2px solid var(--ink);
-      background: var(--paper);
-      color: var(--muted);
-      font-size: 13px;
-      box-shadow: inset 2px 2px 0 rgba(0, 0, 0, 0.05);
-      cursor: text;
-    }
-
-    .search-box svg { color: var(--ink); }
-
-    main { padding-top: 0; }
-
-    .intro {
-      display: flex;
-      align-items: end;
-      justify-content: space-between;
-      gap: 32px;
-      margin-bottom: 28px;
-    }
-
-    .eyebrow, .section-label {
-      margin: 0;
-      color: var(--muted);
-      font-family: var(--mono);
-      font-size: 11px;
-      font-weight: 400;
-      letter-spacing: 0;
-      text-transform: uppercase;
-    }
-
-    h1 {
-      margin: 11px 0 0;
-      font-size: 57px;
-      line-height: 1.03;
-      font-weight: 700;
-      letter-spacing: 0;
     }
 
     .intro-note {
-      max-width: 250px;
-      margin: 0 0 4px;
       color: var(--muted);
       font-size: 13px;
-      line-height: 1.65;
     }
 
     .workbench {
       display: grid;
       grid-template-columns: minmax(0, 1.15fr) minmax(310px, 0.85fr);
       min-height: 470px;
-      border: 3px solid var(--ink);
+      border: 3px solid var(--text);
       box-shadow: var(--shadow);
-      background: var(--panel);
+      background: var(--surface);
     }
 
     .stage {
@@ -159,8 +72,8 @@
       align-items: center;
       justify-content: space-between;
       padding: 26px 30px 24px;
-      border-right: 3px solid var(--ink);
-      background-color: var(--yellow-soft);
+      border-right: 3px solid var(--text);
+      background-color: var(--surface-alt);
     }
 
     .stage-head {
@@ -175,7 +88,7 @@
       align-items: center;
       gap: 8px;
       color: var(--muted);
-      font-family: var(--mono);
+      font-family: var(--font-code);
       font-size: 11px;
       text-transform: uppercase;
     }
@@ -188,13 +101,13 @@
     }
 
     .is-playing .status-dot {
-      background: var(--green-deep);
+      background: var(--accent-2);
       box-shadow: 0 0 0 4px rgba(117, 188, 39, 0.15);
     }
 
     .beat-count {
       color: var(--muted);
-      font-family: var(--mono);
+      font-family: var(--font-code);
       font-size: 11px;
     }
 
@@ -204,9 +117,9 @@
       aspect-ratio: 1;
       place-items: center;
       margin: 16px 0;
-      border: 2px solid var(--ink);
+      border: 2px solid var(--text);
       border-radius: 50%;
-      background: var(--panel);
+      background: var(--surface);
     }
 
     .light {
@@ -219,7 +132,7 @@
 
     .light.flash {
       transform: scale(1.035);
-      background: var(--green);
+      background: var(--accent-2);
       box-shadow: 0 0 24px 8px rgba(0, 168, 120, 0.52), 0 0 80px 26px rgba(0, 168, 120, 0.24);
     }
 
@@ -235,7 +148,7 @@
       display: flex;
       align-items: baseline;
       gap: 7px;
-      font-family: var(--mono);
+      font-family: var(--font-code);
     }
 
     .tempo-readout strong { font-size: 18px; font-weight: 500; }
@@ -247,7 +160,7 @@
       align-items: center;
       justify-content: center;
       gap: 9px;
-      border: 2px solid var(--ink);
+      border: 2px solid var(--text);
       border-radius: 0;
       cursor: pointer;
       transition: transform 120ms ease, background 120ms ease;
@@ -256,8 +169,8 @@
     .play-button {
       min-width: 132px;
       padding: 0 17px;
-      color: var(--panel);
-      background: var(--ink);
+      color: var(--surface);
+      background: var(--text);
       box-shadow: var(--shadow-sm);
       font-size: 12px;
       font-weight: 700;
@@ -291,7 +204,7 @@
     .control-section { padding-bottom: 25px; }
     .control-section + .control-section {
       padding-top: 24px;
-      border-top: 2px solid var(--ink);
+      border-top: 2px solid var(--text);
     }
 
     .section-heading {
@@ -310,8 +223,8 @@
     }
 
     .range-value {
-      color: var(--ink);
-      font-family: var(--mono);
+      color: var(--text);
+      font-family: var(--font-code);
       font-size: 12px;
       white-space: nowrap;
     }
@@ -329,7 +242,7 @@
     input[type="range"]::-webkit-slider-runnable-track {
       height: 4px;
       border-radius: 0;
-      background: linear-gradient(to right, var(--green) var(--fill, 0%), #ddd7ce var(--fill, 0%));
+      background: linear-gradient(to right, var(--accent-2) var(--fill, 0%), #ddd7ce var(--fill, 0%));
     }
 
     input[type="range"]::-moz-range-track {
@@ -338,36 +251,36 @@
       background: #ddd7ce;
     }
 
-    input[type="range"]::-moz-range-progress { height: 4px; background: var(--green); }
+    input[type="range"]::-moz-range-progress { height: 4px; background: var(--accent-2); }
 
     input[type="range"]::-webkit-slider-thumb {
       width: 16px;
       height: 16px;
       margin-top: -6px;
       appearance: none;
-      border: 2px solid var(--ink);
+      border: 2px solid var(--text);
       border-radius: 0;
-      background: var(--yellow);
-      box-shadow: 2px 2px 0 var(--ink);
+      background: var(--accent);
+      box-shadow: 2px 2px 0 var(--text);
     }
 
     input[type="range"]::-moz-range-thumb {
       width: 12px;
       height: 12px;
-      border: 2px solid var(--ink);
+      border: 2px solid var(--text);
       border-radius: 0;
-      background: var(--yellow);
-      box-shadow: 2px 2px 0 var(--ink);
+      background: var(--accent);
+      box-shadow: 2px 2px 0 var(--text);
     }
 
-    input[type="range"]:focus-visible { outline: 2px solid var(--green-deep); outline-offset: 5px; }
+    input[type="range"]:focus-visible { outline: 2px solid var(--accent-2); outline-offset: 5px; }
 
     .range-ends {
       display: flex;
       justify-content: space-between;
       margin-top: 8px;
       color: var(--muted);
-      font-family: var(--mono);
+      font-family: var(--font-code);
       font-size: 10px;
     }
 
@@ -389,15 +302,15 @@
       gap: 12px;
       margin-top: auto;
       padding: 16px 0 18px;
-      border-top: 2px solid var(--ink);
-      border-bottom: 2px solid var(--ink);
+      border-top: 2px solid var(--text);
+      border-bottom: 2px solid var(--text);
     }
 
     .result-label {
       display: block;
       margin-bottom: 8px;
       color: var(--muted);
-      font-family: var(--mono);
+      font-family: var(--font-code);
       font-size: 10px;
       text-transform: uppercase;
     }
@@ -406,7 +319,7 @@
       display: flex;
       align-items: baseline;
       gap: 7px;
-      font-family: var(--mono);
+      font-family: var(--font-code);
     }
 
     .result-value strong {
@@ -424,7 +337,7 @@
       flex: 0 0 auto;
       place-items: center;
       border-radius: 50%;
-      color: var(--ink);
+      color: var(--text);
       background: #D8F3E8;
       font-size: 16px;
       opacity: 0;
@@ -445,8 +358,8 @@
     .calculate-button {
       min-width: 142px;
       padding: 0 16px;
-      color: var(--ink);
-      background: var(--yellow);
+      color: var(--text);
+      background: var(--accent);
       box-shadow: var(--shadow-sm);
       font-size: 12px;
       font-weight: 800;
@@ -463,20 +376,9 @@
       font-size: 11px;
     }
 
-    .reset-button:hover { color: var(--ink); }
+    .reset-button:hover { color: var(--text); }
 
-    .footer-note {
-      display: flex;
-      justify-content: space-between;
-      gap: 20px;
-      margin-top: 14px;
-      color: var(--muted);
-      font-family: var(--mono);
-      font-size: 10px;
-      line-height: 1.6;
-    }
-
-    button:focus-visible { outline: 2px solid var(--green-deep); outline-offset: 3px; }
+    button:focus-visible { outline: 2px solid var(--accent-2); outline-offset: 3px; }
 
     @media (max-width: 760px) {
       .shell { width: min(100% - 32px, 560px); padding-top: 32px; }
@@ -488,12 +390,7 @@
       .controls { min-height: 440px; padding: 23px 21px 20px; }
     }
 
-    @media (max-width: 900px) {
-      .nav-links, .search-box { display: none; }
-    }
-
     @media (max-width: 420px) {
-      h1 { font-size: 37px; }
       .stage { min-height: 350px; padding: 17px; }
       .light-wrap { width: min(62vw, 245px); }
       .stage-foot { gap: 8px; }
@@ -501,36 +398,12 @@
       .footer-note { flex-direction: column; gap: 3px; }
     }
 
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; }
-    }
   </style>
 </head>
 <body>
-  <header class="navbar">
-    <div class="brand">
-      <span class="glyph">
-        <img src="favicon.svg" width="32" height="32" alt="">
-      </span>
-      Atharva's Website
-    </div>
-    <nav class="nav-links">
-      <a href="/">Articles</a>
-      <a href="#">Knowledge Base</a>
-      <a href="#">About</a>
-    </nav>
-    <div class="search-box">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-      Search logs...
-    </div>
-  </header>
-
   <div class="shell">
     <main>
       <section class="intro" aria-labelledby="page-title">
-        <div>
-          <h1 id="page-title">Bluetooth Latency Test</h1>
-        </div>
         <p class="intro-note">Delay the green flash until it appears in sync with the ding, then calculate your estimated audio latency.</p>
       </section>
 
@@ -583,8 +456,15 @@
           </div>
         </div>
       </section>
+      <div class="tool-explanation">
+      <p>Lately I've been using VSCode and Copilot to quickly create simple apps for my specific niche use cases. Yesterday I wanted to measure the latency of my bluetooth earphones. I quickly found a bunch of websites online, but all of them rely on the user pressing a button after hearing an audio signal. While some of them perform a "calibration run" at the beginning to measure the user's reaction time so it can be subtracted from the later measurements, I still wasn't confident with the accuracy of the results, since your reaction time can vary slightly between two measurements.</p>
 
-      <div class="footer-note" id="about"><span>Estimates vary by device and listening volume.</span><span>USE HEADPHONES FOR BEST RESULTS</span></div>
+      <p>My idea was to have a light that flashes at a fixed tempo along with an audio ding. Ideally, both the visual and auditory cues will be in sync. When using a bluetooth devices that introduces latency, the audio will be delayed. The user can then move a slider to offset the light flashing until the light and sound are once again in sync. The duration by which the flashing light was offset is the latency of the user's bluetooth device.</p>
+
+    <p>I gave this to Copilot as a prompt, and it pretty quickly created an implementation of it in a single HTML file. I had a couple of back-and-forths with the model to get it to look and behave just how I wanted, but I'm pretty happy with the result. Although I could have implemented something functionally identical without AI with my current Javascript knowledge, there's no way I could make the UI as good looking.</p>
+
+    <p>I had to do a lot of clean-up manually to integrate the "app" well into my current article format, but I think it looks pretty good! I'm planning to create more of these small utilities soon.</p>
+      </div>
     </main>
   </div>
 
@@ -717,3 +597,4 @@
   </script>
 </body>
 </html>
+

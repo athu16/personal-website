@@ -15,6 +15,9 @@ import xml.etree.ElementTree as ET
 from xml.dom import minidom
 import markdown
 import frontmatter
+from markdown_katex_rs import KatexRsExtension
+import time
+
 
 # --- SITE CONFIGURATION ---
 BASE_URL = "https://www.atharvaidya.com"
@@ -23,7 +26,7 @@ FEED_DESCRIPTION = "I write about things I find interesting or stuff I want to r
 FEED_FILENAME = "feed.xml"
 
 MARKDOWN_EXTENSIONS = [
-    "extra", "codehilite", "toc", "sane_lists", "admonition", "smarty", "markdown_katex", "pymdownx.details",
+    "extra", "codehilite", "toc", "sane_lists", "admonition", "smarty", KatexRsExtension(), "pymdownx.details",
 ]
 MARKDOWN_EXTENSION_CONFIGS = {
     "codehilite": {"guess_lang": False},
@@ -46,6 +49,11 @@ def render_template(text: str, context: dict) -> str:
         return match.group(0)
 
     return re.sub(r'\{\{\s*([a-zA-Z0-9_]+)\s*\}\}', replacer, text)
+
+def render_partial(path: Path, context: dict) -> str:
+    """Read an HTML partial and substitute template variables."""
+    text = path.read_text(encoding="utf-8")
+    return render_template(text, context)
 
 def generate_tag_pills(tags):
     return "".join([f'<span class="tag-pill">{t.lstrip("#")}</span>' for t in tags])
@@ -92,6 +100,9 @@ def process_file(input_path: Path, output_dir: Path, content_dir: Path, template
         content_html = convert_markdown(rendered_content)
     else:
         content_html = rendered_content
+
+    metadata["footer"] = render_partial(template_dir / "footer.html", metadata)
+    metadata["header"] = render_partial(template_dir / "header.html", metadata)
 
     # Inject into layout template
     layout_path = template_dir / layout_name
@@ -202,6 +213,12 @@ def build_homepage(articles: list, template_dir: Path, output_dir: Path):
         flags=re.DOTALL
     )
 
+    footer_html = render_partial(template_dir / "footer.html", {})
+    header_html = render_partial(template_dir / "header.html", {})
+
+    index_html = render_template(index_html, {"footer": footer_html})
+    index_html = render_template(index_html, {"header": header_html})
+
     # Save generated index.html to output/
     out_index = output_dir / "index.html"
     out_index.write_text(index_html, encoding="utf-8")
@@ -309,4 +326,12 @@ def main() -> int:
     return 0
 
 if __name__ == "__main__":
-    sys.exit(main())
+    # Temporary
+    while True:
+        try:
+            main()
+            time.sleep(2)
+        except KeyboardException:
+            sys.exit()
+
+    # sys.exit(main())

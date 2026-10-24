@@ -1,5 +1,5 @@
 markdown
-markdown-katex
+markdown-katex-rs
 pygments
 pymdown-extensions
 python-frontmatter
