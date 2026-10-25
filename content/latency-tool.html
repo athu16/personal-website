@@ -101,7 +101,7 @@ tags: webapps
     }
 
     .is-playing .status-dot {
-      background: var(--accent-2);
+      background: var(--accent-green-sat);
       box-shadow: 0 0 0 4px rgba(117, 188, 39, 0.15);
     }
 
@@ -132,8 +132,8 @@ tags: webapps
 
     .light.flash {
       transform: scale(1.035);
-      background: var(--accent-2);
-      box-shadow: 0 0 24px 8px rgba(0, 168, 120, 0.52), 0 0 80px 26px rgba(0, 168, 120, 0.24);
+      background: var(--accent-orange-sat);
+      box-shadow: 0 0 24px 8px var(--accent-orange-sat);
     }
 
     .stage-foot {
@@ -242,7 +242,7 @@ tags: webapps
     input[type="range"]::-webkit-slider-runnable-track {
       height: 4px;
       border-radius: 0;
-      background: linear-gradient(to right, var(--accent-2) var(--fill, 0%), #ddd7ce var(--fill, 0%));
+      background: linear-gradient(to right, var(--accent-green-sat) var(--fill, 0%), #ddd7ce var(--fill, 0%));
     }
 
     input[type="range"]::-moz-range-track {
@@ -251,7 +251,7 @@ tags: webapps
       background: #ddd7ce;
     }
 
-    input[type="range"]::-moz-range-progress { height: 4px; background: var(--accent-2); }
+    input[type="range"]::-moz-range-progress { height: 4px; background: var(--accent-green-sat); }
 
     input[type="range"]::-webkit-slider-thumb {
       width: 16px;
@@ -273,7 +273,7 @@ tags: webapps
       box-shadow: 2px 2px 0 var(--text);
     }
 
-    input[type="range"]:focus-visible { outline: 2px solid var(--accent-2); outline-offset: 5px; }
+    input[type="range"]:focus-visible { outline: 2px solid var(--accent-green-sat); outline-offset: 5px; }
 
     .range-ends {
       display: flex;
@@ -378,7 +378,7 @@ tags: webapps
 
     .reset-button:hover { color: var(--text); }
 
-    button:focus-visible { outline: 2px solid var(--accent-2); outline-offset: 3px; }
+    button:focus-visible { outline: 2px solid var(--accent-green-sat); outline-offset: 3px; }
 
     @media (max-width: 760px) {
       .shell { width: min(100% - 32px, 560px); padding-top: 32px; }
@@ -404,7 +404,7 @@ tags: webapps
   <div class="shell">
     <main>
       <section class="intro" aria-labelledby="page-title">
-        <p class="intro-note">Delay the green flash until it appears in sync with the ding, then calculate your estimated audio latency.</p>
+        <p class="intro-note">Delay the orange flash until it appears in sync with the ding, then calculate your estimated audio latency.</p>
       </section>
 
       <section class="workbench" id="test" aria-label="Latency test controls">

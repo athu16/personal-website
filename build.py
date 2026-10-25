@@ -137,13 +137,15 @@ def generate_index_card(article: dict) -> str:
 
     # Pick badge colors matching design system
     if category == "Blogs":
-        cat_style = 'style="background: var(--cat-blogs); color: var(--text);"'
+        cat_style = 'style="background: var(--accent-orange); color: var(--text);"'
     elif category == "Product Reviews":
-        cat_style = 'style="background: var(--cat-reviews); color: #fff;"'
+        cat_style = 'style="background: var(--accent-green); color: var(--text);"'
     elif category == 'Technical Posts':
-        cat_style = 'style="background: var(--cat-techposts); color: #fff;"'
+        cat_style = 'style="background: var(--accent-pink); color: #fff;"'
     elif category == 'Maths':
-        cat_style = 'style="background: var(--cat-mathematics); color: #fff;"'
+        cat_style = 'style="background: var(--accent-blue); color: var(--text);"'
+    elif category == 'Apps':
+        cat_style = 'style="background: var(--accent-lavender); color: var(--text);"'
     else:
         cat_style = 'style="background: var(--text); color: var(--surface);"'
 

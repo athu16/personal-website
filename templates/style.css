@@ -1,27 +1,42 @@
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Lora:ital,wght@0,400..700;1,400..700&family=Space+Grotesk:wght@500;700&display=swap');
 :root {
+  /* Colours */
   --bg: #F5F0E8;
   --surface: #FFFFFF;
   --surface-alt: #FFF3C4;
   --text: #111111;
   --muted: #4B4B4B;
-  --accent: #FFD400;     /* Signature Yellow */
-  --accent-2: #00A878;   /* Clean Green */
-  --accent-3: #FF4433;   /* Accent Red */
-  --cat-blogs: #c29ed9;
-  --cat-reviews: #61bb9d;
-  --cat-techposts: #e9958e;
-  --cat-mathematics: #4eb6e2;
+  /* Accents */
+  --accent: #FFD23F;     
+  --accent-orange: #FFA552;   
+  --accent-green: #88D498;   
+  --accent-blue: #74B9FF;
+  --accent-lavender: #B8A9FA;
+  --accent-pink: #FF6B6B;
+  /* Saturated accents */
+  --accent-sat: #FFC300;     
+  --accent-orange-sat: #FF7B00;
+  --accent-green-sat: #379A4D;   
+  --accent-blue-sat: #0080FF;
+  --accent-lavender-sat: #5C39F3;
+  --accent-pink-sat: #FF2E2E;
+  /* Desaturated Accents */
+  --accent-desat: #FFEEB8;     
+  --accent-orange-desat: #FFDAB8;   
+  --accent-green-desat: #CBECD2;   
+  --accent-blue-desat: #B8DBFF;
+  --accent-lavender-desat: #EBE7FE;
+  --accent-pink-desat: #FFB8B8;
+  /* Text decorations */
   --border: #111111;
-  --radius: 0px;         /* Sharp neo-brutalist corners */
   --shadow-sm: 4px 4px 0 #111111;
   --shadow: 6px 6px 0 #111111;
   --shadow-lg: 10px 10px 0 #111111;
 
   --grid-line: rgba(17, 17, 17, 0.06);
 
+  /* Fonts */
   --font-head: 'Space Grotesk', sans-serif;
-  --font-body: 'Space Grotesk', sans-serif; /* Matched to homepage */
+  --font-body: 'Inter', sans-serif;
   --font-code: 'JetBrains Mono', monospace;
   --card-border-width: 3px;
 }
@@ -31,9 +46,10 @@
 
 body {
   font-family: var(--font-body);
+  font-feature-settings: 'liga' 1, 'calt' 1; /* fix for Chrome */
   background: var(--bg);
   color: var(--text);
-  line-height: 1.6;
+  line-height: 1.5;
   min-height: 100vh;
 }
 
@@ -47,7 +63,7 @@ h1, h2, h3, h4, h5, h6, .brand {
 a { color: inherit; text-decoration: none; }
 
 .prose a {
-  color: var(--accent-2);
+  color: var(--accent-orange-sat);
   font-weight: 700;
   text-decoration: underline;
   text-decoration-thickness: 2px;
@@ -55,8 +71,6 @@ a { color: inherit; text-decoration: none; }
   transition: background-color 0.1s ease;
 }
 
-/* Exclude homepage cards and navbar links from the background change effect */
-/*a:hover:not(.homepage-workspace a:hover, .navbar a:hover) {*/
 .prose a:hover {
     background-color: var(--accent);
     color: #000000;
@@ -64,24 +78,9 @@ a { color: inherit; text-decoration: none; }
 
 ::selection {
     background: var(--accent);
-    color: #111111;
 }
 
-/* --- Layout Elements --- */
-header.site {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 18px 4vw;
-  background: var(--surface);
-  border-bottom: var(--card-border-width) solid var(--border);
-  margin-bottom: 60px;
-  position: sticky;
-  top: 0;
-  z-index: 50;
-}
-
-/* --- Homepage Stuff --- */
+/* --- HOMEPAGE STUFF STARTS --- */
 
 /* ---------- Blueprint Grid Background ---------- */
 .grid-bg {
@@ -91,7 +90,6 @@ header.site {
     background-size: 32px 32px;
     background-position: center top;
 }
-
 
 /* ---------- Hero Section ---------- */
 .hero {
@@ -157,7 +155,7 @@ header.site {
     display: flex; align-items: center; gap: 8px;
 }
 .sidebar-title::before {
-    content: ''; display: inline-block; width: 8px; height: 8px; background: var(--accent-3);
+    content: ''; display: inline-block; width: 8px; height: 8px; background: var(--accent-green);
 }
 
 .directory-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
@@ -216,6 +214,11 @@ header.site {
     border-top: 1px dashed #ccc; padding-top: 16px;
 }
 
+@media (max-width: 900px) {
+    .homepage-workspace { grid-template-columns: 1fr; }
+    .sidebar { border-right: none; border-bottom: 3px solid var(--border); padding-bottom: 24px; }
+  }
+
 /* --- End of Homepage Stuff --- */
 
 /* ---------- Top Navigation ---------- */
@@ -253,27 +256,7 @@ header.site {
 }
 
 .nav-links a:hover {
-    color: var(--accent-2);
-}
-
-nav.site-nav {
-  display: flex;
-  gap: 24px;
-}
-
-nav.site-nav a {
-  text-decoration: none;
-  color: var(--muted);
-  font-size: 14px;
-  font-family: var(--font-code);
-  font-weight: 700;
-  text-transform: uppercase;
-}
-
-nav.site-nav a:hover,
-nav.site-nav a.current {
-  color: var(--text);
-  border-bottom: 2px solid var(--border);
+    color: var(--accent-sat);
 }
 
 .search-box {
@@ -296,12 +279,6 @@ main.container {
     border-bottom: 3px solid var(--border);
     padding-bottom: 24px;
     margin-bottom: 40px;
-}
-
-.article-header h1 {
-    font-size: clamp(32px, 5vw, 54px);
-    letter-spacing: -0.02em;
-    margin-bottom: 20px;
 }
 
 .article-meta {
@@ -357,6 +334,7 @@ main.container {
 
 
 .prose p {
+  text-align: justify;
   font-size: 18px;
   margin-bottom: 1.5em;
   color: rgba(17, 17, 17, 0.9);
@@ -380,7 +358,8 @@ main.container {
   background: rgba(0,0,0,0.06);
   color: var(--text);
   border: 1px solid var(--border);
-  padding: 2px 6px;
+  border-radius: 5px;
+  padding: 1px 4px;
   vertical-align: middle;
 }
 
@@ -433,7 +412,8 @@ main.container {
     max-width: 100%;
     height: auto;
     display: block;
-    margin: 24px 0;
+    /* margin: 24px 0; */
+    margin: auto;
     border: 2px solid var(--border);
     box-shadow: var(--shadow-sm);
 }
@@ -444,58 +424,39 @@ main.container {
 
 /* --- Clean Pygments Syntax Highlighting (Custom Strict Rules) --- */
 .codehilite * {
-    color: #111111 !important; /* Catch-all default: Black */
+    color: var(--text) !important; /* Catch-all default: Black */
 }
 
 /* 1. Punctuation - Gray */
 .codehilite .p, .codehilite .o {
-  color: #888888 !important;
+  color: var(--muted) !important;
 }
 
 /* 2. Strings - Green */
 .codehilite .s, .codehilite .s1, .codehilite .s2,
 .codehilite .se, .codehilite .sh, .codehilite .si,
 .codehilite .sx, .codehilite .sr, .codehilite .ss {
-  color: var(--accent-2) !important;
+  color: var(--accent-green-sat) !important;
 }
 
-/* 3. Comments - Yellow (Saturated gold for clean light-mode readability) */
+/* 3. Comments - Grey with yellow background */
 .codehilite .c, .codehilite .ch, .codehilite .cm,
 .codehilite .c1, .codehilite .cs {
-  color: #B58A00 !important;
+  color: var(--muted) !important;
+  background: var(--accent-desat);
+  padding: 0px 4px;
   font-style: italic !important;
 }
 
 /* 4. Function definitions - Blue */
 .codehilite .nf, .codehilite .fm {
-  color: #0056b3 !important;
+  color: var(--accent-blue-sat) !important;
   font-weight: 700 !important;
 }
 
-/* 5. Constants & Numbers - Purple */
-.codehilite .kc, .codehilite .no, .codehilite .m,
-.codehilite .mf, .codehilite .mh, .codehilite .mi,
-.codehilite .mo {
-  color: #7B1FA2 !important;
-}
-
-
 /* --- Admonitions / Callout Blocks (Redesigned & High-Saturation) --- */
 /* Base Callout Styling (Margin, Background, Border, Shadow) */
-.prose .admonition,
-.prose details.admonition,
-.prose details.note,
-.prose details.warning,
-.prose details.caution,
-.prose details.danger,
-.prose details.error,
-.prose details.bug,
-.prose details.tip,
-.prose details.hint,
-.prose details.success,
-.prose details.info,
-.prose details.important,
-.prose details.todo {
+.prose :is(.admonition, details) {
   background: var(--surface);
   border: var(--card-border-width) solid var(--border);
   box-shadow: var(--shadow-sm);
@@ -513,38 +474,22 @@ main.container {
   padding: 20px;
 }
 
-/* Collapsible Admonitions (Padding is moved inside to prevent clipping/cutoff) */
-.prose details.admonition,
-.prose details.note,
-.prose details.warning,
-.prose details.caution,
-.prose details.danger,
-.prose details.error,
-.prose details.bug,
-.prose details.tip,
-.prose details.hint,
-.prose details.success,
-.prose details.info,
-.prose details.important,
-.prose details.todo {
-  padding: 0;
-}
 
 /* Summary Headers Spacing */
 .prose .admonition-title,
-.prose details.admonition > summary,
-.prose details.note > summary,
-.prose details.warning > summary,
-.prose details.caution > summary,
-.prose details.danger > summary,
-.prose details.error > summary,
-.prose details.bug > summary,
-.prose details.tip > summary,
-.prose details.hint > summary,
-.prose details.success > summary,
-.prose details.info > summary,
-.prose details.important > summary,
-.prose details.todo > summary {
+.prose .admonition > summary,
+.prose .note > summary,
+.prose .warning > summary,
+.prose .caution > summary,
+.prose .danger > summary,
+.prose .error > summary,
+.prose .bug > summary,
+.prose .tip > summary,
+.prose .hint > summary,
+.prose .success > summary,
+.prose .info > summary,
+.prose .important > summary,
+.prose .todo > summary {
   font-family: var(--font-code);
   font-weight: 700;
   font-size: 12px;
@@ -592,7 +537,7 @@ main.container {
 
 /* Note (Saturated Yellow) */
 .prose .admonition.note, .prose details.note {
-  background: #FFF89C;
+  background: var(--accent-desat);
 }
 .prose .admonition.note .admonition-title, .prose details.note > summary {
   background: var(--accent);
@@ -601,62 +546,58 @@ main.container {
 /* Warning & Caution (Saturated Orange) */
 .prose .admonition.warning, .prose .admonition.caution,
 .prose details.warning, .prose details.caution {
-  background: #FFC97A;
+  background: var(--accent-orange-desat);
 }
 .prose .admonition.warning .admonition-title, .prose .admonition.caution .admonition-title,
 .prose details.warning > summary, .prose details.caution > summary {
-  background: #FF9400;
-  color: #000000;
+  background: var(--accent-orange);
 }
 
 /* Danger, Error & Bug (Saturated Vibrant Red) */
 .prose .admonition.danger, .prose .admonition.error, .prose .admonition.bug,
 .prose details.danger, .prose details.error, .prose details.bug {
-  background: #FFA1A1;
+  background: var(--accent-pink-desat);
 }
 .prose .admonition.danger .admonition-title, .prose .admonition.error .admonition-title, .prose .admonition.bug .admonition-title,
 .prose details.danger > summary, .prose details.error > summary, .prose details.bug > summary {
-  background: var(--accent-3);
-  color: #FFFFFF;
+  background: var(--accent-pink);
 }
 
 /* Tip, Hint & Success (Saturated Green) */
 .prose .admonition.tip, .prose .admonition.hint, .prose .admonition.success,
 .prose details.tip, .prose details.hint, .prose details.success {
-  background: #A3FCD0;
+  background: var(--accent-green-desat);
 }
 .prose .admonition.tip .admonition-title, .prose .admonition.hint .admonition-title, .prose .admonition.success .admonition-title,
 .prose details.tip > summary, .prose details.hint > summary, .prose details.success > summary {
-  background: var(--accent-2);
-  color: #FFFFFF;
+  background: var(--accent-green);
 }
 
 /* Info, Important & Todo (Saturated Blue) */
 .prose .admonition.info, .prose .admonition.important, .prose .admonition.todo,
 .prose details.info, .prose details.important, .prose details.todo {
-  background: #BFE3FF;
+  background: var(--accent-blue-desat);
 }
 .prose .admonition.info .admonition-title, .prose .admonition.important .admonition-title, .prose .admonition.todo .admonition-title,
 .prose details.info > summary, .prose details.important > summary, .prose details.todo > summary {
-  background: #4DA3FF;
-  color: #000000;
+  background: var(--accent-blue);
 }
 
 
 /* --- Blockquotes --- */
 .prose blockquote {
-  background: var(--surface-alt);
-  border: var(--card-border-width) solid var(--border);
-  border-left: 10px solid var(--accent); /* Left accent bar */
-  box-shadow: var(--shadow);
-  padding: 16px 20px;
-  margin: 24px 0;
-  font-style: italic;
-}
-.prose blockquote p {
-  font-size: 20px;
-  margin-bottom: 0;
-  color: var(--text);
+    background: var(--accent-desat);
+    border: var(--card-border-width) solid var(--border);
+    border-left: 10px solid var(--accent); /* Left accent bar */
+    box-shadow: var(--shadow);
+    padding: 16px 20px;
+    margin: 24px 0;
+    font-style: italic;
+    p {
+        font-size: 20px;
+        margin-bottom: 0;
+        color: var(--text);
+    }
 }
 
 /* --- Tables --- */
@@ -690,12 +631,33 @@ main.container {
   background: var(--bg);
 }
 
+/* --- Footnotes --- */
+
+.prose .footnote {
+    p {
+        font-family: var(--font-code);
+        font-size: 16px;
+    }
+
+    hr {
+        height: 2px;
+        background-color: var(--muted);
+        border: none;
+    }
+    
+    ol {
+        margin-top: 1.5em;
+        padding-left: 1em;
+    }
+}
+
 /* --- Footer --- */
 .site-footer {
-    border-top: 3px solid var(--border); background: var(--surface); padding: 32px 4vw;
+    border-top: 3px solid var(--border); background: var(--surface); padding: 16px 4vw;
     display: flex; align-items: center; justify-content: space-between;
     font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--muted);
     gap: 24px;
+    /* position: sticky; bottom: 0; z-index: 50; */
 }
 
 .site-footer .footer-note { max-width: 600px; line-height: 1.5; }
@@ -745,4 +707,15 @@ main.container {
 
 a.footnote-ref {
     text-decoration: none;
+    margin: 0px 4px;
+    padding: 0px 4px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-family: var(--font-code);
+    color: var(--accent-orange-sat);
+}
+
+/* Position footnote references near the center when jumping back */
+[id^="fnref"] {
+    scroll-margin-top: 50vh;
 }
