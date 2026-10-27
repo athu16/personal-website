@@ -350,6 +350,10 @@ main.container {
   margin-bottom: 0.6em;
 }
 
+.prose em {
+    color: var(--muted)
+}
+
 /* Inline Code */
 .prose code {
   font-family: var(--font-code);
